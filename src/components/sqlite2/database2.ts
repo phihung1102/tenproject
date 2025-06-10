@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 import SQLite, { SQLiteDatabase } from "react-native-sqlite-storage";
 
 SQLite.enablePromise(true);
@@ -30,6 +31,8 @@ export type User = {
     name: string;
     password: string;
     email: string;
+    role: string;
+    avatar: string;
 }
 
 const initialCategories: Category[] = [
@@ -44,7 +47,7 @@ const initialProducts: Product[] = [
 ];
 
 const initialUser: User[] = [
-    {id: 1, name: 'Admin', password: 'admin123', email: 'admin123@gmail.com'},
+    {id: 1, name: 'Admin', password: 'admin123', email: 'admin123@gmail.com',role: 'admin', avatar: ''},
 ];
 
 export const initDatabase = async (onSuccess?: () => void): Promise<void> => {
@@ -75,11 +78,12 @@ export const initDatabase = async (onSuccess?: () => void): Promise<void> => {
                 name TEXT,
                 email TEXT UNIQUE,
                 password TEXT,
-                role TEXT
+                role TEXT,
+                avatar TEXT
             )`);
             initialUser.forEach((user) => {
                 tx.executeSql('INSERT OR IGNORE INTO users (id, name, password, email, role) VALUES (?, ?, ?, ?, ?)',
-                    [user.id, user.name, user.password, user.email, 'admin']
+                    [user.id, user.name, user.password, user.email, user.role]
                 );
             });
         },
@@ -129,10 +133,121 @@ export const fetchProducts = async (): Promise<Product[]> => {
     }
 }
 
+export const  fetchUsers = async (): Promise<User[]> => {
+    try {
+        const database = await getDB();
+        const results = await database.executeSql('SELECT * FROM users');
+        const items: User[] = [];
+        const rows = results[0].rows;
+        for(let i = 0; i < rows.length; i++){
+            items.push(rows.item(i));
+        }
+        return items;
+    } catch (error) {
+        console.error('❌ Lỗi lấy dữ liệu bảng users', error);
+        return [];
+    }
+}
+
+export const addProduct = async (product: Omit<Product, 'id'> ) => {
+    try {
+        const database = await getDB();
+        await database.executeSql(
+            'INSERT INTO products (name, price, img, categoryId) VALUES (?, ?, ?, ?)',
+            [product.name, product.price, product.img, product.categoryId]
+        );
+        console.log('✅ Sản phẩm đã được thêm');
+        return true;
+    } catch (error) {
+        console.error('❌ Lỗi thêm sản phẩm:', error);
+        return false;
+    }
+}
+
+export const updateProduct = async (product: Product) => {
+    try {
+        const database = await getDB();
+        await database.executeSql(
+            'UPDATE products SET name = ?, price = ?, img = ?, categoryId = ? WHERE id = ?',
+            [product.name, product.price, product.img , product.categoryId, product.id]
+        )
+        console.log('✅ Sửa sản phẩm thành công!');
+    } catch (error) {
+        console.error('❌ Lỗi sửa sản phẩm:', error);
+    }
+}
+
+export const deleteProduct = async (id: number) => {
+    try {
+        const database = await getDB();
+        await database.executeSql('DELETE FROM products WHERE id = ?', [id]);
+        console.log('✅ Xóa sản phẩm thành công!');
+    } catch (error) {   
+        console.log('❌ Lỗi xóa sản phẩm:', error);
+    }
+}
+
+export const addCategory = async (category: Omit<Category, 'id'> ) => {
+    try {
+        const database = await getDB();
+        await database.executeSql(
+            'INSERT INTO categories (name) VALUES (?)',
+            [category.name]
+        );
+        console.log('✅ Loại sản phẩm đã được thêm');
+        return true;
+    } catch (error) {
+        console.error('❌ Lỗi thêm loại sản phẩm:', error);
+        return false;
+    }
+}
+
+export const deleteCategory = async (id: number) => {
+    try {
+        const database = await getDB();
+        await database.executeSql('DELETE FROM categories WHERE id = ?', [id]);
+        console.log('✅ Xóa loại sản phẩm thành công!');
+        return true;
+    } catch (error) {   
+        console.log('❌ Lỗi xóa loại sản phẩm:', error);
+        return false;
+    }
+}
+
+export const updateCategory = async (category: Category) => {
+    try {
+        const database = await getDB();
+        await database.executeSql(
+            'UPDATE categories SET name = ? WHERE id = ?',
+            [category.name, category.id]
+        )
+        console.log('✅ Sửa loại sản phẩm thành công!');
+        return true;
+    } catch (error) {
+        console.error('❌ Lỗi sửa loại sản phẩm:', error);
+        return false;
+    }
+}
+
+export const updateUser = async (user: User) => {
+    try {
+        const database = await getDB();
+        await database.executeSql(
+            'UPDATE users SET name = ?, email = ?, password = ?, role = ?, avatar = ? WHERE id = ?',
+            [user.name, user.email, user.password, user.role, user.avatar, user.id]
+        );
+        console.log('✅ Cập nhật người dùng thành công!');
+        return true;
+    } catch (error) {
+        console.error('❌ Lỗi cập nhật người dùng:', error);
+        return false;
+    }
+}
+
 export const registerUser = async (name: string, email: string, password: string): Promise<boolean> => {
     try{
         const database = await getDB();
-        const results = await database.executeSql(
+        await database.executeSql(
             'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
             [name, email, password, 'user']
         );

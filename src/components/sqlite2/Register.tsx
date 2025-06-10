@@ -13,6 +13,7 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation<NavigationProp>();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleRegister = async () => {
     if(!name || !email || !password){
@@ -28,7 +29,7 @@ const Register = () => {
       setPassword('');
       setTimeout(() => {
         navigation.navigate('Login');
-      }, 3000);
+      }, 2000);
     } else {
       Alert.alert('Lỗi', 'Email đã tồn tại hoặc xảy ra lỗi!');
     }
@@ -54,13 +55,22 @@ const Register = () => {
         autoCapitalize="none"
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Mật khẩu"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Mật khẩu"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword} // Đảo giá trị ở đây
+        />
+        <TouchableOpacity 
+          style={styles.eyeIcon}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          <Text>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
+        </TouchableOpacity>
+      </View>
+
 
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Đăng ký</Text>
@@ -122,5 +132,23 @@ const styles = StyleSheet.create({
   link: {
     color: '#0080FF',
     fontWeight: '600',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontSize: 16,
+  },
+  eyeIcon: {
+    padding: 10,
   },
 });

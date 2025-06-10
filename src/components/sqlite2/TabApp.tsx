@@ -5,10 +5,9 @@ import Login from './Login'
 import Register from './Register'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Quanly from './Quanly';
 import Logout from './Logout'
 import Admin from './AdminManager'
-import User from './UserManager'
+import UserMNG from './UserMNG'
 
 const Tab = createBottomTabNavigator();
 
@@ -46,7 +45,7 @@ const TabApp = () => {
         <>
         <Tab.Screen
           name="Quanly"
-          component={user.role === 'admin' ? Admin : User }
+          component={user.role === 'admin' ? Admin : UserMNG }
           options={{ title: 'Quanly',
             tabBarIcon: ({ color, size}) => (
               <Text style={{ fontSize: size, color }}>👤</Text>

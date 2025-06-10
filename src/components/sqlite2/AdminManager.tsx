@@ -1,24 +1,28 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from './AppNavigator';
+import { useNavigation } from '@react-navigation/native';
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'ProductMNG' | 'UserMNG' | 'CategoryMNG'>;
 
 const Admin = () => {
-  
+  const navigation = useNavigation<NavigationProp>();
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Admin</Text>
 
       <View style={styles.buttonGroup}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('UserMNG')}>
           <Text style={styles.buttonText}>Quản lý người dùng</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CategoryMNG')}>
           <Text style={styles.buttonText}>Quản lý loại sản phẩm</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ProductMNG')}>
           <Text style={styles.buttonText}>Quản lý sản phẩm</Text>
         </TouchableOpacity>
       </View>

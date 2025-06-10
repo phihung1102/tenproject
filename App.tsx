@@ -34,10 +34,10 @@ import QlspSqlite from './src/components/sqlite/qlspSqlite';
 import HangQlspSqlite from './src/components/hangSqlite/hangQLSP';
 import AppNavigatorProduct from './src/components/sqlite/AppNavigatorProduct';
 import HangAppNavigatorProduct from './src/components/hangSqlite/hangAppNavigatorProduct';
-import Home from './src/components/sqlite2.tsx/Home';
+import Home from './src/components/sqlite2/Home';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import AppNavigator from './src/components/sqlite2.tsx/AppNavigator';
-import TabApp from './src/components/sqlite2.tsx/TabApp';
+import AppNavigator from './src/components/sqlite2/AppNavigator';
+import TabApp from './src/components/sqlite2/TabApp';
 
 function App(): JSX.Element {
 

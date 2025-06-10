@@ -13,6 +13,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation<NavigationProp>();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -46,13 +47,21 @@ const Login = () => {
         autoCapitalize="none"
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Mật khẩu"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Mật khẩu"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+        />
+        <TouchableOpacity 
+          style={styles.eyeIcon}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          <Text>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Đăng nhập</Text>
@@ -114,5 +123,24 @@ const styles = StyleSheet.create({
   link: {
     color: '#0080FF',
     fontWeight: '600',
+  },
+
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontSize: 16,
+  },
+  eyeIcon: {
+    padding: 10,
   },
 });
