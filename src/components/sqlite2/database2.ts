@@ -172,8 +172,10 @@ export const updateProduct = async (product: Product) => {
             [product.name, product.price, product.img , product.categoryId, product.id]
         )
         console.log('✅ Sửa sản phẩm thành công!');
+        return true;
     } catch (error) {
         console.error('❌ Lỗi sửa sản phẩm:', error);
+        return false;
     }
 }
 
@@ -186,6 +188,52 @@ export const deleteProduct = async (id: number) => {
         console.log('❌ Lỗi xóa sản phẩm:', error);
     }
 }
+
+export const productDetail = async (id: number): Promise<Product | null> => {
+    try {
+        const database = await getDB();
+        const results = await database.executeSql(`
+            SELECT p.*, c.name as categoryName
+            FROM products p
+            JOIN categories c ON p.categoryId = c.id
+            WHERE p.id = ?
+        `, [id]);
+
+        const rows = results[0].rows;
+        if (rows.length > 0) {
+            return rows.item(0);
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error('❌ Lỗi khi lấy thông tin chi tiết sản phẩm!', error);
+        return null;
+    }
+};
+
+export const fetchRelatedProducts = async (categoryId: number, excludeProductId: number): Promise<Product[]> => {
+    try {
+        const database = await getDB();
+        const results = await database.executeSql(`
+            SELECT p.*, c.name as categoryName
+            FROM products p
+            JOIN categories c ON p.categoryId = c.id
+            WHERE p.categoryId = ? AND p.id != ?
+            LIMIT 4
+        `, [categoryId, excludeProductId]);
+        
+        const items: Product[] = [];
+        const rows = results[0].rows;
+        for(let i = 0; i < rows.length; i++) {
+            items.push(rows.item(i));
+        }
+        return items;
+    } catch (error) {
+        console.error('❌ Lỗi lấy sản phẩm cùng loại:', error);
+        return [];
+    }
+}
+
 
 export const addCategory = async (category: Omit<Category, 'id'> ) => {
     try {
@@ -291,5 +339,93 @@ export const logoutUser = async (): Promise<void> => {
     console.error('❌ Lỗi khi đăng xuất:', error);
   }
 };
+
+export const searchProducts = async (query: string): Promise<Product[]> => {
+    try {
+        const database = await getDB();
+        
+        const keywords = query.trim().split(/\s+/).filter(k => k.length > 0);
+        
+        if (keywords.length === 0) {
+            return [];
+        }
+
+        const whereClauses = keywords.map(() => 
+            `(p.name LIKE ? OR c.name LIKE ? OR 
+             REPLACE(p.name, ' ', '') LIKE ? OR 
+             REPLACE(c.name, ' ', '') LIKE ?)`
+        ).join(' AND ');
+
+        const params: any[] = [];
+        keywords.forEach(keyword => {
+            const likeParam = `%${keyword}%`;
+            params.push(likeParam, likeParam, `%${keyword.replace(/\s+/g, '')}%`, `%${keyword.replace(/\s+/g, '')}%`);
+        });
+
+        const results = await database.executeSql(`
+            SELECT p.*, c.name as categoryName
+            FROM products p
+            JOIN categories c ON p.categoryId = c.id
+            WHERE ${whereClauses}
+            ORDER BY p.name
+        `, params);
+        
+        const items: Product[] = [];
+        const rows = results[0].rows;
+        for(let i = 0; i < rows.length; i++) {
+            items.push(rows.item(i));
+        }
+        return items;
+    } catch (error) {
+        console.error('❌ Lỗi tìm kiếm sản phẩm:', error);
+        return [];
+    }
+}
+
+export const filterProductsByPrice = async (minPrice: number, maxPrice: number): Promise<Product[]> => {
+    try {
+        const database = await getDB();
+        const results = await database.executeSql(`
+            SELECT p.*, c.name as categoryName
+            FROM products p
+            JOIN categories c ON p.categoryId = c.id
+            WHERE p.price BETWEEN ? AND ?
+            ORDER BY p.price
+        `, [minPrice, maxPrice]);
+        
+        const items: Product[] = [];
+        const rows = results[0].rows;
+        for(let i = 0; i < rows.length; i++) {
+            items.push(rows.item(i));
+        }
+        return items;
+    } catch (error) {
+        console.error('❌ Lỗi lọc sản phẩm theo giá:', error);
+        return [];
+    }
+}
+
+export const filterProductsByCategory = async (categoryId: number): Promise<Product[]> => {
+    try {
+        const database = await getDB();
+        const results = await database.executeSql(`
+            SELECT p.*, c.name as categoryName
+            FROM products p
+            JOIN categories c ON p.categoryId = c.id
+            WHERE p.categoryId = ?
+            ORDER BY p.name
+        `, [categoryId]);
+        
+        const items: Product[] = [];
+        const rows = results[0].rows;
+        for(let i = 0; i < rows.length; i++) {
+            items.push(rows.item(i));
+        }
+        return items;
+    } catch (error) {
+        console.error('❌ Lỗi lọc sản phẩm theo danh mục:', error);
+        return [];
+    }
+}
 
 export default getDB;

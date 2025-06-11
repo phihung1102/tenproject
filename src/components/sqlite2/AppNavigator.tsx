@@ -7,6 +7,7 @@ import TabApp from './TabApp'
 import ProductMNG from './AdminProductMNG'
 import UserMNG from './AdminUserMNG'
 import CategoryMNG from './AdminCategoryMNG'
+import ProductDetail from './ProductDetail'
 
 export type RootStackParamList = {
     MainTab: undefined;
@@ -15,6 +16,7 @@ export type RootStackParamList = {
     ProductMNG: undefined;
     UserMNG: undefined;
     CategoryMNG: undefined;
+    ProductDetail: { id: number };
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -27,6 +29,7 @@ const AppNavigator = () => {
         <Stack.Screen name='ProductMNG' component={ProductMNG} options={{title: 'ProductMNG'}}/>
         <Stack.Screen name='UserMNG' component={UserMNG} options={{title: 'UserMNG'}}/>
         <Stack.Screen name='CategoryMNG' component={CategoryMNG} options={{title: 'CategoryMNG'}}/>
+        <Stack.Screen name='ProductDetail' component={ProductDetail} options={{title: 'ProductDetail'}}/>
     </Stack.Navigator>
   )
 }
