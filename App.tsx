@@ -38,6 +38,8 @@ import Home from './src/components/sqlite2/Home';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AppNavigator from './src/components/sqlite2/AppNavigator';
 import TabApp from './src/components/sqlite2/TabApp';
+import HAppNavigator from './src/components/hangSqlite2/hAppNavigator';
+
 
 function App(): JSX.Element {
 
@@ -50,8 +52,14 @@ function App(): JSX.Element {
     //   <HangAppNavigatorProduct/>
     // </NavigationContainer>
 
+    // App kiểm tra kết thúc môn Hung
+    // <NavigationContainer>
+    //   <AppNavigator/>
+    // </NavigationContainer>
+
+    // App kiểm tra kết thúc môn Hang
     <NavigationContainer>
-      <AppNavigator/>
+      <HAppNavigator/>
     </NavigationContainer>
 
     // <View>
