@@ -53,14 +53,14 @@ function App(): JSX.Element {
     // </NavigationContainer>
 
     // App kiểm tra kết thúc môn Hung
-    // <NavigationContainer>
-    //   <AppNavigator/>
-    // </NavigationContainer>
+    <NavigationContainer>
+      <AppNavigator/>
+    </NavigationContainer>
 
     // App kiểm tra kết thúc môn Hang
-    <NavigationContainer>
-      <HAppNavigator/>
-    </NavigationContainer>
+    // <NavigationContainer>
+    //   <HAppNavigator/>
+    // </NavigationContainer>
 
     // <View>
     //   {/* <Hello/> */}

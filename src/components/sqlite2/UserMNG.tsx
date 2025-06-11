@@ -195,18 +195,21 @@ const styles = StyleSheet.create({
   scrollContainer: {
     padding: 20,
     paddingBottom: 40,
+    backgroundColor: '#f8f9fa',
+    flexGrow: 1,
   },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f8f9fa',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333',
+    color: '#343a40',
   },
   avatarContainer: {
     alignItems: 'center',
@@ -217,9 +220,10 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     marginBottom: 10,
+    backgroundColor: '#dee2e6',
   },
   avatarPlaceholder: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4a6da7',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -230,12 +234,13 @@ const styles = StyleSheet.create({
   },
   changeAvatarButton: {
     padding: 8,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#dee2e6',
     borderRadius: 5,
   },
   changeAvatarButtonText: {
-    color: '#007AFF',
+    color: '#4a6da7',
     fontSize: 14,
+    fontWeight: '600',
   },
   fieldContainer: {
     marginBottom: 15,
@@ -244,42 +249,44 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
-    color: '#555',
+    color: '#495057',
   },
   value: {
     fontSize: 16,
     padding: 10,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#e9ecef',
     borderRadius: 5,
+    color: '#343a40',
   },
   input: {
     fontSize: 16,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#dee2e6',
     borderRadius: 5,
     backgroundColor: 'white',
+    color: '#343a40',
   },
   note: {
     fontSize: 12,
-    color: '#888',
+    color: '#868e96',
     marginTop: 5,
   },
   buttonGroup: {
     marginTop: 20,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4a6da7',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 10,
   },
   saveButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#38b000',
   },
   cancelButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: '#d62828',
   },
   buttonText: {
     color: 'white',

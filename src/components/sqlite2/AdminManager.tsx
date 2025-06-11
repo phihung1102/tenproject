@@ -35,14 +35,14 @@ export default Admin;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F8FF',
+    backgroundColor: '#f8f9fa',
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
   header: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#0055AA',
+    color: '#343a40',
     textAlign: 'center',
     marginBottom: 40,
   },
@@ -51,22 +51,26 @@ const styles = StyleSheet.create({
   },
   button: {
     flexDirection: 'row',
-    backgroundColor: '#0077CC',
-    padding: 15,
-    borderRadius: 16,
+    backgroundColor: '#4a6da7',
+    padding: 14,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
+    elevation: 3,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: '#dee2e6',
   },
   icon: {
     marginRight: 15,
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 16,
     color: 'white',
     fontWeight: '600',
   },
 });
+
