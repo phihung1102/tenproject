@@ -16,7 +16,11 @@ const ProductMNG = () => {
   useEffect(() => {
     const loadData = async () => {
       await fetchCategories().then(setCategories);
-      await fetchProducts().then(setProducts);
+      await fetchProducts().then(products => {
+        // Sắp xếp sản phẩm theo id giảm dần (mới nhất lên đầu)
+        const sortedProducts = [...products].sort((a, b) => b.id - a.id);
+        setProducts(sortedProducts);
+      });
     };
     loadData();
   }, []);
@@ -46,8 +50,12 @@ const ProductMNG = () => {
           categoryId: categoryId,
       });
     }
+    
+    // Cập nhật và sắp xếp lại danh sách
     const updated = await fetchProducts();
-    setProducts(updated);
+    setProducts([...updated].sort((a, b) => b.id - a.id));
+    
+    // Reset form
     setName('');
     setPrice('');
     setImgUri('');
@@ -72,7 +80,8 @@ const ProductMNG = () => {
           text: 'Đồng ý',
           onPress: async () => {
             await deleteProduct(id);
-            await fetchProducts().then(setProducts);
+            const updated = await fetchProducts();
+            setProducts([...updated].sort((a, b) => b.id - a.id));
           },
           style: 'destructive',
         },
@@ -93,8 +102,6 @@ const ProductMNG = () => {
       }
     )
   }
-
-  
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -191,20 +198,20 @@ const styles = StyleSheet.create({
     padding: 16,
     flexDirection: 'column',
     gap: 10,
-    backgroundColor: '#FFF9F5', // nền kem nhẹ
+    backgroundColor: '#FFF9F5',
   },
   title: {
     textAlign: 'center',
     fontSize: 30,
     fontWeight: 'bold',
-    color: '#5A3E2A', // nâu đậm
+    color: '#5A3E2A',
     marginBottom: 20,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   textInput: {
     borderWidth: 1.5,
-    borderColor: '#E0C4A0', // viền nâu nhạt
+    borderColor: '#E0C4A0',
     padding: 10,
     borderRadius: 10,
     backgroundColor: '#FFFDFB',
@@ -228,7 +235,7 @@ const styles = StyleSheet.create({
     color: '#5A3E2A',
   },
   button: {
-    backgroundColor: '#D4A373', // nâu sáng
+    backgroundColor: '#D4A373',
     paddingVertical: 12,
     borderRadius: 10,
     marginBottom: 10,
