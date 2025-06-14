@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Modal, Pressable } from 'react-native';
-import { updateUser, fetchUsers, User } from './hDatabase2';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Modal, Pressable, Alert } from 'react-native';
+import { updateUser, fetchUsers, User, deleteUser } from './hDatabase2';
 
 const UserMNG = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -33,6 +33,32 @@ const UserMNG = () => {
     }
   }
 
+  const handleDeleteUser = (user: User) => {
+    Alert.alert(
+      "Xác nhận xóa",
+      `Bạn có chắc muốn xóa người dùng ${user.name}?`,
+      [
+        {
+          text: "Hủy",
+          style: "cancel"
+        },
+        { 
+          text: "Xóa", 
+          onPress: async () => {
+            const success = await deleteUser(user.id);
+            if (success) {
+              const updatedUsers = await fetchUsers();
+              setUsers(updatedUsers);
+              Alert.alert("Thành công", "Đã xóa người dùng thành công");
+            } else {
+              Alert.alert("Lỗi", "Không thể xóa người dùng");
+            }
+          },
+          style: "destructive"
+        }
+      ]
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -42,22 +68,34 @@ const UserMNG = () => {
         {(users.map((user) => (
           user.role !== 'admin' ? (
             <View key={user.id} style={styles.userCard}>
-              <Image style={styles.image} source={{ uri: user.avatar || 'https://www.google.com.vn/search?q=avatar+default&sca_esv=ea7b27f3c7f5bbf6&udm=2&sxsrf=AE3TifP4PifukxTEcYoOjrBzF6X3zX4p2g%3A1749568986566&ei=2k1IaJqvIqCOvr0P7fHpqQQ&oq=avatar+d%C3%A8&gs_lp=EgNpbWciCmF2YXRhciBkw6gqAggAMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKSMUjUNwEWL0TcAN4AJABAZgBWaABsQWqAQE4uAEByAEA-AEBmAIKoAKDBcICBxAjGCcYyQLCAgYQABgHGB7CAgUQABiABMICBBAAGB7CAgoQABiABBhDGIoFwgIIEAAYgAQYsQPCAgsQABiABBixAxiDAZgDAIgGAZIHAjEwoAepLLIHATe4B_QEwgcFMC40LjbIByQ&sclient=img#vhid=bhXONIl2bblF7M&vssid=mosaic' }}
-                defaultSource={{ uri: 'https://www.google.com.vn/search?q=avatar+default&sca_esv=ea7b27f3c7f5bbf6&udm=2&sxsrf=AE3TifP4PifukxTEcYoOjrBzF6X3zX4p2g%3A1749568986566&ei=2k1IaJqvIqCOvr0P7fHpqQQ&oq=avatar+d%C3%A8&gs_lp=EgNpbWciCmF2YXRhciBkw6gqAggAMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKMgcQABiABBgKSMUjUNwEWL0TcAN4AJABAZgBWaABsQWqAQE4uAEByAEA-AEBmAIKoAKDBcICBxAjGCcYyQLCAgYQABgHGB7CAgUQABiABMICBBAAGB7CAgoQABiABBhDGIoFwgIIEAAYgAQYsQPCAgsQABiABBixAxiDAZgDAIgGAZIHAjEwoAepLLIHATe4B_QEwgcFMC40LjbIByQ&sclient=img#vhid=bhXONIl2bblF7M&vssid=mosaic' }}
+              <Image 
+                style={styles.image} 
+                source={{ uri: user.avatar || 'https://via.placeholder.com/150' }}
+                defaultSource={{ uri: 'https://via.placeholder.com/150' }}
               />
               <View style={styles.info}>
-                <View style={{ flexDirection: 'row', gap: 20, }}>
-                  <Text style={styles.text}>ID: { user.id }</Text>
+                <View style={styles.infoRow}>
+                  <Text style={styles.text}>ID: {user.id}</Text>
                   <Text style={styles.text}>Tên: {user.name}</Text>
                 </View>
                 <Text style={styles.text}>Email: {user.email}</Text>
                 <View style={styles.roleContainer}>
                   <Text style={styles.text}>Vai trò: {user.role}</Text>
-                  <TouchableOpacity style={styles.changeRoleButton} onPress={() => handleRoleChange(user)}>
-                    <Text style={styles.changeRoleText}>Đổi vai trò</Text>
-                  </TouchableOpacity>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity 
+                      style={[styles.actionButton, styles.changeRoleButton]} 
+                      onPress={() => handleRoleChange(user)}
+                    >
+                      <Text style={styles.buttonText}>Đổi vai trò</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={[styles.actionButton, styles.deleteButton]} 
+                      onPress={() => handleDeleteUser(user)}
+                    >
+                      <Text style={styles.buttonText}>Xóa</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                
               </View>
             </View>
           ) : null
@@ -109,20 +147,18 @@ const UserMNG = () => {
   );
 };
 
-export default UserMNG;
-
 const styles = StyleSheet.create({
   scrollContainer: {
     padding: 16,
     flexDirection: 'column',
     gap: 10,
-    backgroundColor: '#FFF9F5', // nền kem
+    backgroundColor: '#FFF9F5',
   },
   title: {
     textAlign: 'center',
     fontSize: 30,
     fontWeight: 'bold',
-    color: '#5A3E2A', // nâu đậm
+    color: '#5A3E2A',
     marginBottom: 20,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -130,7 +166,7 @@ const styles = StyleSheet.create({
   userCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFDFB', // nền nhẹ hơn
+    backgroundColor: '#FFFDFB',
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
@@ -140,7 +176,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 3,
     borderWidth: 1,
-    borderColor: '#E0C4A0', // viền nâu nhạt
+    borderColor: '#E0C4A0',
   },
   image: {
     width: 90,
@@ -156,24 +192,38 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 6,
   },
+  infoRow: {
+    flexDirection: 'row', 
+    gap: 20,
+  },
   text: {
     fontSize: 16,
-    color: '#5A3E2A', // chữ nâu đậm
+    color: '#5A3E2A',
   },
   roleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
     justifyContent: 'space-between',
-    marginTop: 6,
   },
-  changeRoleButton: {
-    backgroundColor: '#D4A373', // nâu sáng
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actionButton: {
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     borderRadius: 8,
     elevation: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 80,
   },
-  changeRoleText: {
+  changeRoleButton: {
+    backgroundColor: '#D4A373',
+  },
+  deleteButton: {
+    backgroundColor: '#E74C3C',
+  },
+  buttonText: {
     color: 'white',
     fontSize: 14,
     fontWeight: '600',
@@ -230,9 +280,6 @@ const styles = StyleSheet.create({
   confirmButton: {
     backgroundColor: '#D4A373',
   },
-  buttonText: {
-    color: '#FFF',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
 });
+
+export default UserMNG;

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Modal, Pressable } from 'react-native';
-import { updateUser, fetchUsers, User } from './database2';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Modal, Pressable, Alert } from 'react-native';
+import { updateUser, fetchUsers, User, deleteUser } from './database2';
 
 const UserMNG = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [role, setRole] = useState<string>('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -33,6 +35,24 @@ const UserMNG = () => {
     }
   }
 
+  const confirmDelete = (user: User) => {
+    setUserToDelete(user);
+    setDeleteModalVisible(true);
+  }
+
+  const handleDeleteUser = async () => {
+    if (userToDelete) {
+      const success = await deleteUser(userToDelete.id);
+      if (success) {
+        const load = await fetchUsers();
+        setUsers(load);
+        Alert.alert('Thành công', 'Người dùng đã được xóa');
+      } else {
+        Alert.alert('Lỗi', 'Không thể xóa người dùng');
+      }
+      setDeleteModalVisible(false);
+    }
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -53,17 +73,28 @@ const UserMNG = () => {
                 <Text style={styles.text}>Email: {user.email}</Text>
                 <View style={styles.roleContainer}>
                   <Text style={styles.text}>Vai trò: {user.role}</Text>
-                  <TouchableOpacity style={styles.changeRoleButton} onPress={() => handleRoleChange(user)}>
-                    <Text style={styles.changeRoleText}>Đổi vai trò</Text>
-                  </TouchableOpacity>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity 
+                      style={[styles.changeRoleButton, {backgroundColor: '#4a6da7'}]} 
+                      onPress={() => handleRoleChange(user)}
+                    >
+                      <Text style={styles.changeRoleText}>Đổi vai trò</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={[styles.changeRoleButton, {backgroundColor: '#dc3545'}]} 
+                      onPress={() => confirmDelete(user)}
+                    >
+                      <Text style={styles.changeRoleText}>Xóa</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                
               </View>
             </View>
           ) : null
         )))}
       </View>
 
+      {/* Modal thay đổi vai trò */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -105,6 +136,36 @@ const UserMNG = () => {
           </View>
         </View>
       </Modal>
+
+      {/* Modal xác nhận xóa */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={deleteModalVisible}
+        onRequestClose={() => setDeleteModalVisible(false)}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitle}>Xác nhận xóa</Text>
+            <Text style={styles.deleteText}>Bạn có chắc chắn muốn xóa người dùng {userToDelete?.name}?</Text>
+            
+            <View style={styles.modalButtons}>
+              <Pressable
+                style={[styles.button, styles.cancelButton]}
+                onPress={() => setDeleteModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Hủy</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, {backgroundColor: '#dc3545'}]}
+                onPress={handleDeleteUser}
+              >
+                <Text style={styles.buttonText}>Xóa</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -116,13 +177,13 @@ const styles = StyleSheet.create({
     padding: 16,
     flexDirection: 'column',
     gap: 10,
-    backgroundColor: '#f8f9fa', // nền nhẹ
+    backgroundColor: '#f8f9fa',
   },
   title: {
     textAlign: 'center',
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#4a6da7', // xanh chủ đạo
+    color: '#4a6da7',
     marginBottom: 10,
   },
   userCard: {
@@ -163,8 +224,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 4,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   changeRoleButton: {
-    backgroundColor: '#4a6da7',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 6,
@@ -194,6 +258,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
     color: '#4a6da7',
+  },
+  deleteText: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   roleOption: {
     padding: 14,
@@ -230,4 +299,3 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-

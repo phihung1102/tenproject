@@ -292,6 +292,18 @@ export const updateUser = async (user: User) => {
     }
 }
 
+export const deleteUser = async (id: number): Promise<boolean> => {
+    try {
+        const database = await getDB();
+        await database.executeSql('DELETE FROM users WHERE id = ?', [id]);
+        console.log('✅ Xóa người dùng thành công!');
+        return true;
+    } catch (error) {   
+        console.log('❌ Lỗi xóa người dùng:', error);
+        return false;
+    }
+}
+
 export const registerUser = async (name: string, email: string, password: string): Promise<boolean> => {
     try{
         const database = await getDB();
